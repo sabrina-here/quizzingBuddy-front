@@ -1,7 +1,9 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Link, NavLink } from "react-router";
+import { authContext } from "../Providers/AuthProvider";
 
 export default function Header() {
+  const { user, handleShowLogin, handleShowSignup } = useContext(authContext);
   // const { user, logOut } = useContext(AuthContext);
 
   // const handleLogOut = () => {
@@ -19,22 +21,6 @@ export default function Header() {
       <li className="px-3 hover:font-medium">
         <Link to={"/logout"}>Logout</Link>
       </li>
-
-      {/* {user ? (
-        <>
-          <li>
-            <button className="btn btn-ghost" onClick={handleLogOut}>
-              Log out
-            </button>
-          </li>
-        </>
-      ) : (
-        <>
-          <li>
-            <Link to={"/login"}>Login</Link>
-          </li>
-        </>
-      )} */}
     </>
   );
   const guestNav = (
@@ -45,22 +31,6 @@ export default function Header() {
       <li className="px-3 hover:font-medium">
         <Link to={"/sampleQuiz"}>Sample Quiz</Link>
       </li>
-
-      {/* {user ? (
-        <>
-          <li>
-            <button className="btn btn-ghost" onClick={handleLogOut}>
-              Log out
-            </button>
-          </li>
-        </>
-      ) : (
-        <>
-          <li>
-            <Link to={"/login"}>Login</Link>
-          </li>
-        </>
-      )} */}
     </>
   );
 
@@ -73,26 +43,40 @@ export default function Header() {
 
             <img className="w-[160px]" src={logo} alt="restaurant" />
           </Link> */}
-          <p>logo</p>
+          <p>
+            <Link to={"/"}>logo</Link>
+          </p>
         </div>
         <div>
           {" "}
-          <ul className="flex justify-evenly px-1 text-center">{guestNav}</ul>
+          <ul className="flex justify-evenly px-1 text-center">
+            {user ? userNav : guestNav}
+          </ul>
         </div>
         <div className="">
-          {/* <CommonBtn>Book A Table</CommonBtn> */}
-          <div className="text-accent">
-            <Link className="hover:font-medium" to={"/login"}>
-              Login
-            </Link>{" "}
-            /{" "}
-            <Link className="hover:font-medium" to={"/signup"}>
-              Signup
-            </Link>
-          </div>
-          <button className="bg-accent text-dark font-bold p-2 rounded-sm hidden">
-            some button
-          </button>
+          {user ? (
+            <button className="bg-accent text-dark font-bold p-2 rounded-sm ">
+              {user.name}
+            </button>
+          ) : (
+            <div className="text-accent">
+              <Link
+                className="hover:font-medium"
+                to={"/signup"}
+                onClick={() => handleShowLogin()}
+              >
+                Login
+              </Link>{" "}
+              /{" "}
+              <Link
+                className="hover:font-medium"
+                to={"/signup"}
+                onClick={() => handleShowSignup()}
+              >
+                Signup
+              </Link>
+            </div>
+          )}
         </div>
       </div>
     </div>

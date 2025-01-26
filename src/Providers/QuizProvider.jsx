@@ -22,9 +22,24 @@ export default function QuizProvider({ children }) {
     },
   ]);
 
+  // const [correctAnswers, setCorrectAnswers] = useState(0);
+  //
+
+  // const calculateCorrectAnswers = () => {
+  //   setCorrectAnswers(correctAnswers + 1);
+  //   console.log(correctAnswers);
+  // };
+
+  const quizInfo = [
+    quiz,
+    setQuiz,
+    // correctAnswers,
+    // calculateCorrectAnswers,
+    // submitted,
+    // handleQuizSubmit,
+  ];
+
   return (
-    <QuizContext.Provider value={[quiz, setQuiz]}>
-      {children}
-    </QuizContext.Provider>
+    <QuizContext.Provider value={quizInfo}>{children}</QuizContext.Provider>
   );
 }

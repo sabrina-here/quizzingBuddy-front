@@ -1,11 +1,12 @@
-import axios from "axios";
 import { useContext } from "react";
 import { QuizContext } from "../Providers/QuizProvider";
+import useAxiosSecure from "../Hooks/useAxiosSecure";
 
 const fetchQuizQuestions = async (topic, difficulty, numQuestions) => {
   const { setQuiz } = useContext(QuizContext);
+  const axiosSecure = useAxiosSecure();
   try {
-    const response = await axios.post(
+    const response = await axiosSecure.post(
       "http://localhost:5000/api/generate-questions",
       {
         topic,
