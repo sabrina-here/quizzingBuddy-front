@@ -5,21 +5,26 @@ export const authContext = createContext();
 export default function AuthProvider({ children }) {
   const [showLogin, setShowLogin] = useState(false);
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   const handleUser = (name, email) => {
     setUser({ name, email });
+    setLoading(false);
   };
 
   const handleShowLogin = () => {
     setShowLogin(true);
+    setLoading(false);
   };
   const handleShowSignup = () => {
     setShowLogin(false);
+    setLoading(false);
   };
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     setUser(null); // Reset user context or state
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -29,6 +34,7 @@ export default function AuthProvider({ children }) {
     if (token && userData) {
       const parsedUser = JSON.parse(userData);
       handleUser(parsedUser.name, parsedUser.email);
+      setLoading(false);
     }
   }, []);
 
@@ -39,6 +45,7 @@ export default function AuthProvider({ children }) {
     user,
     handleUser,
     handleLogout,
+    loading,
   };
   return (
     <authContext.Provider value={authInfo}>{children}</authContext.Provider>

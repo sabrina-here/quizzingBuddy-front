@@ -20,7 +20,6 @@ export default function Header() {
       });
 
       setTopics(response.data.topics);
-      console.log(response);
     } catch (error) {
       console.error("Error fetching topics:", error);
     }

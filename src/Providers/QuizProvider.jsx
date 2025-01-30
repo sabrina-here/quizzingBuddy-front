@@ -10,6 +10,7 @@ export default function QuizProvider({ children }) {
   const [numQuestions, setNumQuestions] = useState(0);
   const [difficulty, setDifficulty] = useState("");
   const [loading, setLoading] = useState(true);
+  const [updateQuizId, setUpdateQuizId] = useState();
 
   const handleQuiz = async (t, n, d) => {
     setTopic(t);
@@ -27,6 +28,16 @@ export default function QuizProvider({ children }) {
     }
   };
 
+  const handleTryAgainQuiz = (q, t, n, d, id) => {
+    setTopic(t);
+    setNumQuestions(n);
+    setDifficulty(d);
+    setLoading(true);
+    setQuiz(q);
+    setUpdateQuizId(id);
+    setLoading(false);
+  };
+
   const quizInfo = {
     quiz,
     topic,
@@ -34,6 +45,8 @@ export default function QuizProvider({ children }) {
     difficulty,
     handleQuiz,
     loading,
+    handleTryAgainQuiz,
+    updateQuizId,
   };
 
   // useEffect(() => {

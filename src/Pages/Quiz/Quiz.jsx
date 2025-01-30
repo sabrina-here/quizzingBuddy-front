@@ -17,6 +17,7 @@ export default function Quiz() {
     difficulty,
     loading,
     handleQuiz,
+    updateQuizId,
   } = useContext(QuizContext);
 
   const { user } = useContext(authContext);
@@ -45,6 +46,27 @@ export default function Quiz() {
     if (selectedAnswer === correctAnswer) {
       setCorrect(correct + 1);
     }
+  };
+
+  const handleQuizUpdate = async () => {
+    setSubmitted(true);
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axiosSecure.patch(
+        `/updateQuiz/${updateQuizId}`,
+        { score: correct },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      console.log(response);
+    } catch (error) {
+      console.error("Error updating quiz score:", error);
+    }
+    localStorage.removeItem("quizData");
   };
 
   const handleQuizSubmit = async () => {
@@ -160,17 +182,33 @@ export default function Quiz() {
         >
           Generate quiz
         </button>
-        <button
-          className={`p-2 mx-2 my-4 border-2 px-5 rounded-lg font-medium text-lg ${
-            submitted
-              ? "bg-medium text-light"
-              : "border-primary  bg-primary/10  hover:bg-primary/20 hover:text-xl"
-          } `}
-          onClick={() => handleQuizSubmit()}
-          disabled={submitted}
-        >
-          Submit
-        </button>
+        <>
+          {updateQuizId ? (
+            <button
+              className={`p-2 mx-2 my-4 border-2 px-5 rounded-lg font-medium text-lg ${
+                submitted
+                  ? "bg-medium text-light"
+                  : "border-primary  bg-primary/10  hover:bg-primary/20 hover:text-xl"
+              } `}
+              onClick={handleQuizUpdate}
+              disabled={submitted}
+            >
+              up Submit
+            </button>
+          ) : (
+            <button
+              className={`p-2 mx-2 my-4 border-2 px-5 rounded-lg font-medium text-lg ${
+                submitted
+                  ? "bg-medium text-light"
+                  : "border-primary  bg-primary/10  hover:bg-primary/20 hover:text-xl"
+              } `}
+              onClick={() => handleQuizSubmit()}
+              disabled={submitted}
+            >
+              Submit
+            </button>
+          )}
+        </>
       </div>
 
       <Modal show={isModalOpen} onClose={closeModal}>
