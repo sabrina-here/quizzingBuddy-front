@@ -33,20 +33,24 @@ export default function Signup() {
         },
       });
       console.log(response);
+      const { token } = response.data;
+      const { name, email } = formData;
+      handleUser(name, email);
+      localStorage.setItem("token", token);
+      localStorage.setItem("user", JSON.stringify({ name, email }));
+      form.reset();
+      Swal.fire({
+        position: "top-end",
+        text: `Welcome ${name}`,
+        width: 300,
+        showCloseButton: true,
+        showConfirmButton: false,
+      });
+      navigate("/");
     } catch (err) {
       console.error("Error registering user:", err);
       alert("An unexpected error occurred. Please try again.");
     }
-    handleUser(formData.name, formData.email);
-    form.reset();
-    Swal.fire({
-      position: "top-end",
-      text: `Welcome ${formData.name}`,
-      width: 300,
-      showCloseButton: true,
-      confirmButtonText: "Login",
-    });
-    navigate("/");
   };
 
   return (

@@ -1,25 +1,62 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Link, NavLink } from "react-router";
 import { authContext } from "../Providers/AuthProvider";
+import useAxiosSecure from "../Hooks/useAxiosSecure";
 
 export default function Header() {
-  const { user, handleShowLogin, handleShowSignup } = useContext(authContext);
-  // const { user, logOut } = useContext(AuthContext);
+  const { user, handleShowLogin, handleShowSignup, handleLogout } =
+    useContext(authContext);
 
-  // const handleLogOut = () => {
-  //   logOut.then(() => {}).catch((err) => console.error(err));
-  // };
+  const [topics, setTopics] = useState([]);
+  const axiosSecure = useAxiosSecure();
+  const fetchTopics = async () => {
+    try {
+      const token = localStorage.getItem("token");
+
+      const response = await axiosSecure.get("/getTopics", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      setTopics(response.data.topics);
+      console.log(response);
+    } catch (error) {
+      console.error("Error fetching topics:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchTopics();
+  }, [user]);
 
   const userNav = (
     <>
       <li className="px-3 hover:font-medium">
-        <NavLink to={"/myTopics"}>My Topics</NavLink>
+        <div className="relative inline-block text-left group cursor-pointer">
+          My Topics
+          <div className="absolute -left-1 w-48 text-dark bg-white border rounded-lg shadow-lg opacity-0 group-hover:opacity-100 group-hover:block transition-opacity duration-200 ease-in-out hidden">
+            <ul className="py-2">
+              {topics.map((topic, index) => (
+                <li
+                  key={index}
+                  className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                >
+                  <NavLink to={`/topics/${topic}`}>{topic}</NavLink>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
       </li>
       <li className="px-3 hover:font-medium">
-        <Link to={"/myQuiz"}>My Quizzes</Link>
+        <Link to={"/myQuizes"}>My Quizzes</Link>
       </li>
-      <li className="px-3 hover:font-medium">
-        <Link to={"/logout"}>Logout</Link>
+      <li
+        onClick={handleLogout}
+        className="hover:text-dark rounded-sm hover:bg-accent px-3 cursor-pointer hover:font-medium"
+      >
+        Logout
       </li>
     </>
   );

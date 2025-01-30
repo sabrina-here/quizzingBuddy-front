@@ -1,10 +1,60 @@
-import React from "react";
+import React, { useContext, useState } from "react";
+import useAxiosSecure from "../../Hooks/useAxiosSecure";
+import { useLocation, useNavigate } from "react-router";
+import Swal from "sweetalert2";
+import { authContext } from "../../Providers/AuthProvider";
 
 export default function Login() {
+  const { handleUser } = useContext(authContext);
+  const axiosSecure = useAxiosSecure();
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
+  const location = useLocation();
+  const navigate = useNavigate();
+  const from = location.state?.from?.pathname || "/";
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault(); // Prevent page refresh
+    const form = e.target;
+
+    try {
+      const response = await axiosSecure.post("/login", formData, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (response.statusText === "OK") {
+        const { name, email, accessToken } = response.data;
+        handleUser(name, email);
+        localStorage.setItem("token", accessToken);
+        localStorage.setItem("user", JSON.stringify({ name, email }));
+        form.reset();
+        Swal.fire({
+          position: "top-end",
+          text: `Welcome ${name}`,
+          width: 300,
+          showCloseButton: true,
+          showConfirmButton: false,
+        });
+        navigate(from, { replace: true });
+      }
+    } catch (err) {
+      console.error("Error Logging user:", err);
+      alert("An unexpected error occurred. Please try again.");
+    }
+  };
+
   return (
     <div className="p-7">
       <div className="mt-10">
-        <form>
+        <form onSubmit={handleSubmit}>
           <div className="my-3">
             <label
               htmlFor="email"
@@ -15,6 +65,7 @@ export default function Login() {
             <input
               name="email"
               type="email"
+              onChange={handleChange}
               placeholder="Enter your Email"
               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
             />
@@ -29,6 +80,7 @@ export default function Login() {
             <input
               name="password"
               type="password"
+              onChange={handleChange}
               placeholder="Enter password"
               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
             />

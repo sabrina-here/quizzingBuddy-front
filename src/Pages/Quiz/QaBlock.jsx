@@ -44,13 +44,11 @@ export default function QaBlock({ blockData, onAnswerChange, submitted }) {
         <div className={``}>
           {answers.map((a, index) => (
             <div
-              className={`p-2 ${
-                submitted && a === correct && `bg-green-600/30`
-              }`}
+              className={` ${submitted && a === correct && `bg-green-600/30`}`}
               key={index}
             >
               <label
-                className={` flex items-center space-x-2 cursor-pointer ${
+                className={`p-2 flex items-center space-x-2 cursor-pointer ${
                   !submitted && `hover:text-lg hover:bg-green-500/10`
                 }`}
               >

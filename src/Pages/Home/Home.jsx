@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 import Modal from "../../Components/Modal";
 import { IoClose } from "react-icons/io5";
 import Swal from "sweetalert2";
-import axios from "axios";
-import fetchQuizQuestions from "../../Components/fetchQuizQuestions";
 import { useNavigate } from "react-router";
+import { authContext } from "../../Providers/AuthProvider";
+import { QuizContext } from "../../Providers/QuizProvider";
 
 export default function Home() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -13,8 +13,8 @@ export default function Home() {
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
 
-  const [user, setUser] = useState(true);
-  const [quizData, setQuizData] = useState([]);
+  const { user } = useContext(authContext);
+  const { handleQuiz } = useContext(QuizContext);
 
   const navigate = useNavigate();
 
@@ -31,9 +31,7 @@ export default function Home() {
         }).then((result) => {
           /* Read more about isConfirmed, isDenied below */
           if (result.isConfirmed) {
-            Swal.fire("Saved!", "", "success");
-          } else if (result.isDenied) {
-            Swal.fire("Changes are not saved", "", "info");
+            navigate("/signup");
           }
         });
       }
@@ -50,8 +48,7 @@ export default function Home() {
     const difficulty = form.difficulty.value;
     const numQuestions = form.questions.value;
 
-    console.log(topic, difficulty, numQuestions);
-    await fetchQuizQuestions(topic, difficulty, numQuestions);
+    handleQuiz(topic, numQuestions, difficulty);
 
     form.reset();
     closeModal();
@@ -78,10 +75,9 @@ export default function Home() {
           className="border-4 border-accent p-2 rounded-lg my-3 font-semibold"
           onClick={openModal}
         >
-          + Create Your First Quiz
+          {user ? "Generate quiz" : "+ Create Your First Quiz"}
         </button>
       </div>
-      <div>{quizData}</div>
 
       <Modal show={isModalOpen} onClose={closeModal}>
         <div className="flex justify-between items-center">
@@ -165,19 +161,19 @@ export default function Home() {
                 <input
                   type="radio"
                   name="questions"
-                  value="10"
+                  value="8"
                   className="text-blue-600 focus:ring-blue-500"
                 />
-                <span className="text-gray-700">10</span>
+                <span className="text-gray-700">8</span>
               </label>
               <label className="flex items-center space-x-2">
                 <input
                   type="radio"
                   name="questions"
-                  value="15"
+                  value="10"
                   className="text-blue-600 focus:ring-blue-500"
                 />
-                <span className="text-gray-700">15</span>
+                <span className="text-gray-700">10</span>
               </label>
             </div>
           </div>
