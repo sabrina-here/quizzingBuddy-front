@@ -6,26 +6,8 @@ import { useQuery } from "react-query";
 
 export default function MyQuizes() {
   const [quizzes, setQuizzes] = useState([]);
-
   const axiosSecure = useAxiosSecure();
-
   const token = localStorage.getItem("token");
-  // const fetchQuizzes = async () => {
-  //   try {
-
-  //     const response = await axiosSecure.get(`/getMyQuizzes`, {
-  //       headers: {
-  //         Authorization: `Bearer ${token}`,
-  //       },
-  //     });
-
-  //     setQuizzes(response.data.quizzes);
-  //     console.log(response);
-  //   } catch (error) {
-  //     console.error("Error fetching quizzes:", error);
-  //     setQuizzes([]); // Clear quizzes if there's an error
-  //   }
-  // };
 
   const { data, isLoading, refetch } = useQuery({
     queryKey: ["getMyQuizzes"],
@@ -43,9 +25,6 @@ export default function MyQuizes() {
   if (isLoading) return <div>loading</div>;
   if (data.message === "No quizzes found for this user.")
     return <div>{data.message}</div>;
-  else {
-    setQuizzes(data.quizzes);
-  }
 
   const deleteQuiz = async (quizId) => {
     try {
@@ -56,7 +35,7 @@ export default function MyQuizes() {
         },
       });
       console.log(response);
-      // Optionally, refresh quiz list after deletion
+
       refetch();
     } catch (error) {
       console.error("Error deleting quiz:", error);
@@ -70,7 +49,6 @@ export default function MyQuizes() {
       showDenyButton: false,
       showCancelButton: true,
       confirmButtonText: "Delete",
-      // denyButtonText: `cancel`,
     }).then((result) => {
       if (result.isConfirmed) {
         deleteQuiz(id);
@@ -78,15 +56,12 @@ export default function MyQuizes() {
     });
   };
 
-  // useEffect(() => {
-  //   fetchQuizzes();
-  // }, []);
   return (
     <div>
       <div>
         <div>
-          {quizzes ? (
-            quizzes.map((quiz, index) => (
+          {data.quizzes ? (
+            data.quizzes.map((quiz, index) => (
               <MyQuizzesBox
                 quizzes={quiz}
                 index={index}

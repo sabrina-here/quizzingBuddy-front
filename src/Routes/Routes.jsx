@@ -10,6 +10,7 @@ import Topics from "../Pages/Topics/Topics";
 import PrivateRoute from "./PrivateRoute";
 import MyQuizes from "../Pages/MyQuizes/MyQuizes";
 import fetchQuizzesLoader from "./Loaders/fetchQuizzesLoader";
+import MyTopics from "../Pages/Topics/MyTopics";
 
 // const response = await axios.get(`/getQuizzes?topic=${topic}`, {
 //   headers: {
@@ -41,6 +42,14 @@ const routes = createBrowserRouter([
         element: (
           <PrivateRoute>
             <MyQuizes />
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "/myTopics",
+        element: (
+          <PrivateRoute>
+            <MyTopics />
           </PrivateRoute>
         ),
       },

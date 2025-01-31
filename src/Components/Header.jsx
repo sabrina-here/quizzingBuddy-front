@@ -33,7 +33,7 @@ export default function Header() {
     <>
       <li className="px-3 hover:font-medium">
         <div className="relative inline-block text-left group cursor-pointer">
-          My Topics
+          <NavLink to={"/myTopics"}> My Topics </NavLink>
           <div className="absolute -left-1 w-48 text-dark bg-white border rounded-lg shadow-lg opacity-0 group-hover:opacity-100 group-hover:block transition-opacity duration-200 ease-in-out hidden">
             <ul className="py-2">
               {topics.map((topic, index) => (
