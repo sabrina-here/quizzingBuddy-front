@@ -15,10 +15,22 @@ export default function Signup() {
     password: "",
   });
   const navigate = useNavigate();
+  const [passwordError, setPasswordError] = useState("");
+  const [submitDisabled, setSubmitDisabled] = useState(true);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
+  };
+
+  const handleConfirmPass = (e) => {
+    const { name, value } = e.target;
+    if (formData.password !== value) {
+      setPasswordError("Password does not match");
+    } else {
+      setPasswordError("");
+      setSubmitDisabled(false);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -136,12 +148,18 @@ export default function Signup() {
                   type="password"
                   placeholder="Confirm password"
                   className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  onChange={handleConfirmPass}
                 />
+                {passwordError && (
+                  <p className="text-red-500 text-sm mt-1">{passwordError}</p>
+                )}
               </div>
               <div className="flex justify-center items-center mt-10">
                 <button
                   type="submit"
-                  className="bg-primary text-white p-2 mx-auto px-4 text-lg font-semibold rounded-sm"
+                  className={`${
+                    submitDisabled ? "bg-medium" : "bg-primary"
+                  }  text-white p-2 mx-auto px-4 text-lg font-semibold rounded-sm`}
                 >
                   Sign Up
                 </button>

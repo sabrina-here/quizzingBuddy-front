@@ -23,6 +23,7 @@ export default function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault(); // Prevent page refresh
     const form = e.target;
+    console.log("hit");
 
     try {
       const response = await axiosSecure.post("/login", formData, {
@@ -30,7 +31,7 @@ export default function Login() {
           "Content-Type": "application/json",
         },
       });
-      if (response.statusText === "OK") {
+      if (response.data.email) {
         const { name, email, accessToken } = response.data;
         handleUser(name, email);
         localStorage.setItem("token", accessToken);

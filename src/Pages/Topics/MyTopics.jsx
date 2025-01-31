@@ -4,6 +4,8 @@ import useAxiosSecure from "../../Hooks/useAxiosSecure";
 import { useQuery } from "react-query";
 import MyTopicsBox from "./MyTopicsBox";
 import Swal from "sweetalert2";
+import Message from "../../Components/Message";
+import Loader from "../../Components/Loader";
 
 export default function MyTopics() {
   const { user } = useContext(authContext);
@@ -25,8 +27,13 @@ export default function MyTopics() {
       return data;
     },
   });
-  if (isLoading) return <div>loading</div>;
-  if (data.message) return <div>You have no topics</div>;
+  if (isLoading) return <Loader />;
+  if (data.message)
+    return (
+      <div>
+        <Message message={"You have no topics"}></Message>
+      </div>
+    );
 
   const deleteTopic = async (topic) => {
     try {
@@ -60,7 +67,7 @@ export default function MyTopics() {
   };
 
   return (
-    <div>
+    <div className="container lg:max-w-[80%] mx-auto">
       {data.length > 0 ? (
         data.map((d, index) => (
           <div key={index}>
@@ -72,7 +79,7 @@ export default function MyTopics() {
           </div>
         ))
       ) : (
-        <div>you have no topics</div>
+        <Message message={"you have no topics"}></Message>
       )}
     </div>
   );

@@ -2,41 +2,47 @@ import React, { useContext, useEffect, useState } from "react";
 import { Link, NavLink } from "react-router";
 import { authContext } from "../Providers/AuthProvider";
 import useAxiosSecure from "../Hooks/useAxiosSecure";
+import { useQuery } from "react-query";
+import Loader from "./Loader";
 
 export default function Header() {
   const { user, handleShowLogin, handleShowSignup, handleLogout } =
     useContext(authContext);
 
-  const [topics, setTopics] = useState([]);
+  // const [topics, setTopics] = useState([]);
   const axiosSecure = useAxiosSecure();
-  const fetchTopics = async () => {
-    try {
-      const token = localStorage.getItem("token");
-
+  const token = localStorage.getItem("token");
+  const {
+    data: topics = [],
+    isLoading,
+    refetch,
+  } = useQuery({
+    queryKey: ["getTopics"],
+    queryFn: async () => {
       const response = await axiosSecure.get("/getTopics", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
+      const data = response.data.topics;
 
-      setTopics(response.data.topics);
-    } catch (error) {
-      console.error("Error fetching topics:", error);
-    }
-  };
-
-  useEffect(() => {
-    fetchTopics();
-  }, [user]);
+      return data;
+    },
+  });
+  if (isLoading) return <Loader />;
 
   const userNav = (
     <>
       <li className="px-3 hover:font-medium">
         <div className="relative inline-block text-left group cursor-pointer">
           <NavLink to={"/myTopics"}> My Topics </NavLink>
-          <div className="absolute -left-1 w-48 text-dark bg-white border rounded-lg shadow-lg opacity-0 group-hover:opacity-100 group-hover:block transition-opacity duration-200 ease-in-out hidden">
+          <div
+            className={`absolute -left-1 w-48 text-dark bg-white border rounded-lg shadow-lg opacity-0  transition-opacity duration-200 ease-in-out hidden ${
+              topics.length > 0 && "group-hover:opacity-100 group-hover:block"
+            }`}
+          >
             <ul className="py-2">
-              {topics.map((topic, index) => (
+              {topics?.map((topic, index) => (
                 <li
                   key={index}
                   className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
@@ -61,12 +67,12 @@ export default function Header() {
   );
   const guestNav = (
     <>
-      <li className="px-3 hover:font-medium">
+      {/* <li className="px-3 hover:font-medium">
         <NavLink to={"/newQuiz"}>New Quiz</NavLink>
       </li>
       <li className="px-3 hover:font-medium">
         <Link to={"/sampleQuiz"}>Sample Quiz</Link>
-      </li>
+      </li> */}
     </>
   );
 
@@ -79,8 +85,8 @@ export default function Header() {
 
             <img className="w-[160px]" src={logo} alt="restaurant" />
           </Link> */}
-          <p>
-            <Link to={"/"}>logo</Link>
+          <p className="text-accent text-2xl font-bold font-cursive">
+            <Link to={"/"}>Quizzing Buddy</Link>
           </p>
         </div>
         <div>
@@ -91,9 +97,16 @@ export default function Header() {
         </div>
         <div className="">
           {user ? (
-            <button className="bg-accent text-dark font-bold p-2 rounded-sm ">
-              {user.name}
-            </button>
+            <div className="relative inline-block text-left group cursor-pointer">
+              <button className="bg-accent text-dark font-bold p-2 rounded-sm ">
+                {user.name}
+              </button>
+              <div className="absolute  right-0 w-48 text-dark bg-white border rounded-lg shadow-lg opacity-0 group-hover:opacity-100 group-hover:block transition-opacity duration-200 ease-in-out hidden">
+                <ul className="py-1 text-center text-dark font-medium bg-light ">
+                  <li>{user.email}</li>
+                </ul>
+              </div>
+            </div>
           ) : (
             <div className="text-accent">
               <Link

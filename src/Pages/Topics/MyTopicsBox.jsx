@@ -12,7 +12,11 @@ export default function MyTopicsBox({ d, index, handleDeleteTopic }) {
     difficulty_hard,
   } = d;
 
-  const percentScore = (score / numQuestions) * 100;
+  const percentScore =
+    numQuestions && score
+      ? parseFloat(((score / numQuestions) * 100).toFixed(2))
+      : 0;
+
   return (
     <div className="container mx-auto my-2 rounded-sm">
       <div className="border-2 flex items-center justify-between px-4 py-2 ">

@@ -8,6 +8,7 @@ import { IoClose } from "react-icons/io5";
 import { authContext } from "../../Providers/AuthProvider";
 import useAxiosSecure from "../../Hooks/useAxiosSecure";
 import Swal from "sweetalert2";
+import Loader from "../../Components/Loader";
 
 export default function Quiz() {
   const {
@@ -135,7 +136,7 @@ export default function Quiz() {
     navigate("/quiz");
   };
 
-  if (loading) return <div>loading</div>;
+  if (loading) return <Loader></Loader>;
 
   return (
     <div className="lg:max-w-[90%] mx-auto">

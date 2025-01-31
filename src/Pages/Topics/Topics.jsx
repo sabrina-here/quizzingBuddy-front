@@ -44,7 +44,12 @@ export default function Topics() {
       } // Provide initial accumulator value
     );
     const totalScorePercentage =
-      (total.totalScore / total.totalQuestions) * 100;
+      total.totalScore && total.totalQuestions
+        ? parseFloat(
+            ((total.totalScore / total.totalQuestions) * 100).toFixed(2)
+          )
+        : 0;
+
     const easyPercentage =
       (difficultyPercentage.totalEasyScore / difficultyPercentage.totalEasyQ) *
       100;
@@ -91,8 +96,8 @@ export default function Topics() {
     };
 
     return (
-      <div>
-        <div className="container mx-auto flex justify-between items-center px-2 py-1 my-7">
+      <div className="container lg:max-w-[80%] mx-auto">
+        <div className=" flex justify-between items-center px-2 py-1 my-7">
           <div>
             Topic :{"   "}
             <span className="font-bold text-lg uppercase ms-2">

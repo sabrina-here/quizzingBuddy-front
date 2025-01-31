@@ -12,6 +12,9 @@ export default {
         accent: "#febf00",
         bg_secondary: "#fbf7f2",
       },
+      fontFamily: {
+        cursive: ["Dancing Script", "cursive"],
+      },
     },
   },
   plugins: [],

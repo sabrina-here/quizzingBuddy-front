@@ -3,6 +3,8 @@ import useAxiosSecure from "../../Hooks/useAxiosSecure";
 import MyQuizzesBox from "./MyQuizzesBox";
 import Swal from "sweetalert2";
 import { useQuery } from "react-query";
+import Loader from "../../Components/Loader";
+import Message from "../../Components/Message";
 
 export default function MyQuizes() {
   const [quizzes, setQuizzes] = useState([]);
@@ -22,9 +24,9 @@ export default function MyQuizes() {
       return data;
     },
   });
-  if (isLoading) return <div>loading</div>;
+  if (isLoading) return <Loader />;
   if (data.message === "No quizzes found for this user.")
-    return <div>{data.message}</div>;
+    return <Message message={"you do not have any quizzes"} />;
 
   const deleteQuiz = async (quizId) => {
     try {
@@ -59,7 +61,7 @@ export default function MyQuizes() {
   return (
     <div>
       <div>
-        <div>
+        <div className="container lg:max-w-[80%] mx-auto">
           {data.quizzes ? (
             data.quizzes.map((quiz, index) => (
               <MyQuizzesBox
