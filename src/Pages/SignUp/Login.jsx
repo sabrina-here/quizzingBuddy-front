@@ -23,7 +23,6 @@ export default function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault(); // Prevent page refresh
     const form = e.target;
-    console.log("hit");
 
     try {
       const response = await axiosSecure.post("/login", formData, {

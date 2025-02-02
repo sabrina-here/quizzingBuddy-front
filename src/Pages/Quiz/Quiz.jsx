@@ -13,6 +13,7 @@ import Loader from "../../Components/Loader";
 export default function Quiz() {
   const {
     quiz = [],
+    quizReset,
     topic,
     numQuestions,
     difficulty,
@@ -62,8 +63,6 @@ export default function Quiz() {
           },
         }
       );
-
-      console.log(response);
     } catch (error) {
       console.error("Error updating quiz score:", error);
     }
@@ -118,7 +117,7 @@ export default function Quiz() {
 
   const handleQuizDiscard = () => {
     localStorage.removeItem("quizData");
-    setQuiz(null);
+    quizReset();
     navigate("/");
   };
 
@@ -151,7 +150,6 @@ export default function Quiz() {
         )}
       </div>
       <div className="grid grid-cols-2 gap-4 container mx-auto">
-        {console.log(quiz)}
         {quiz.map((q, index) => (
           <div key={index}>
             <QaBlock
@@ -194,7 +192,7 @@ export default function Quiz() {
               onClick={handleQuizUpdate}
               disabled={submitted}
             >
-              up Submit
+              Submit
             </button>
           ) : (
             <button

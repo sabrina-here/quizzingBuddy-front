@@ -12,23 +12,24 @@ export default function Header() {
   // const [topics, setTopics] = useState([]);
   const axiosSecure = useAxiosSecure();
   const token = localStorage.getItem("token");
+
   const {
     data: topics = [],
     isLoading,
     refetch,
   } = useQuery({
-    queryKey: ["getTopics"],
+    queryKey: ["getTopics", user],
     queryFn: async () => {
       const response = await axiosSecure.get("/getTopics", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      const data = response.data.topics;
-
-      return data;
+      return response.data.topics;
     },
+    enabled: !!user, // This prevents execution if `user` is falsy (null, undefined, empty string, etc.)
   });
+
   if (isLoading) return <Loader />;
 
   const userNav = (

@@ -8,7 +8,6 @@ export default function Answer({ a, correct }) {
   const handleAnswerChange = (e) => {
     setSelectedAnswer(e.target.value);
     if (selectedAnswer == correct) {
-      console.log("selected ans and correct", selectedAnswer, correct);
       calculateCorrectAnswers();
     }
   };

@@ -72,7 +72,6 @@ export default function Topics() {
             Authorization: `Bearer ${token}`,
           },
         });
-        console.log(response);
         // Optionally, refresh quiz list after deletion
         navigate(0);
       } catch (error) {

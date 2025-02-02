@@ -13,7 +13,7 @@ export default function Home() {
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
 
-  const { user } = useContext(authContext);
+  const { user, handleShowLogin } = useContext(authContext);
   const { handleQuiz } = useContext(QuizContext);
 
   const navigate = useNavigate();
@@ -31,6 +31,7 @@ export default function Home() {
         }).then((result) => {
           /* Read more about isConfirmed, isDenied below */
           if (result.isConfirmed) {
+            handleShowLogin();
             navigate("/signup");
           }
         });
@@ -41,8 +42,26 @@ export default function Home() {
     return () => clearInterval(intervalId);
   }, [user]);
 
+  const handleOpenModal = () => {
+    Swal.fire({
+      title: "Please Login to save your quizzes and track your progress.",
+      showDenyButton: true,
+      showCancelButton: false,
+      confirmButtonText: "Login",
+      denyButtonText: `Not now`,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        handleShowLogin();
+        navigate("/signup");
+      } else if (result.isDenied) {
+        openModal();
+      }
+    });
+  };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
+
     const form = event.target;
     const topic = form.topic.value;
     const difficulty = form.difficulty.value;
@@ -73,7 +92,7 @@ export default function Home() {
         </p>
         <button
           className="border-4 border-accent p-2 rounded-lg my-3 font-semibold"
-          onClick={openModal}
+          onClick={handleOpenModal}
         >
           {user ? "Generate quiz" : "+ Create Your First Quiz"}
         </button>

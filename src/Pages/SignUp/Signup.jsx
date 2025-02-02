@@ -36,7 +36,6 @@ export default function Signup() {
   const handleSubmit = async (e) => {
     e.preventDefault(); // Prevent page refresh
     const form = e.target;
-    console.log(formData);
 
     try {
       const response = await axiosSecure.post("/register", formData, {
@@ -44,7 +43,6 @@ export default function Signup() {
           "Content-Type": "application/json",
         },
       });
-      console.log(response);
       const { token } = response.data;
       const { name, email } = formData;
       handleUser(name, email);

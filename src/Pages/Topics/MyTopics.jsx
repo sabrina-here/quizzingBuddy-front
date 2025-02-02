@@ -23,7 +23,6 @@ export default function MyTopics() {
         },
       });
       const data = response.data;
-      console.log(data);
       return data;
     },
   });
@@ -45,7 +44,6 @@ export default function MyTopics() {
         data: { topic }, // Send topic in request body
       });
 
-      console.log(response);
       refetch();
     } catch (error) {
       console.error("Error deleting topic:", error);

@@ -20,7 +20,6 @@ export default function MyQuizes() {
         },
       });
       const data = response.data;
-      console.log(data);
       return data;
     },
   });
@@ -36,7 +35,6 @@ export default function MyQuizes() {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log(response);
 
       refetch();
     } catch (error) {

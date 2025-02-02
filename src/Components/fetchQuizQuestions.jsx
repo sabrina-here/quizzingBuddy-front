@@ -10,7 +10,6 @@ const fetchQuizQuestions = async (topic, difficulty, numQuestions) => {
     });
 
     let responseData = response.data;
-    console.log(responseData);
 
     // Find the first occurrence of '[' and the last occurrence of ']'
     const startIndex = responseData.indexOf("[");
@@ -19,10 +18,6 @@ const fetchQuizQuestions = async (topic, difficulty, numQuestions) => {
     if (startIndex !== -1 && endIndex !== -1) {
       responseData = responseData.slice(startIndex, endIndex).trim(); // Extract the content within the brackets
     }
-    // else {
-    //   throw new Error("Invalid response format. Expected array-like data.");
-    // }
-    console.log(responseData);
 
     localStorage.setItem("quizData", responseData);
     return responseData;

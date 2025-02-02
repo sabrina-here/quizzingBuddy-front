@@ -38,6 +38,10 @@ export default function QuizProvider({ children }) {
     setLoading(false);
   };
 
+  const quizReset = () => {
+    setQuiz([]);
+  };
+
   const quizInfo = {
     quiz,
     topic,
@@ -47,11 +51,8 @@ export default function QuizProvider({ children }) {
     loading,
     handleTryAgainQuiz,
     updateQuizId,
+    quizReset,
   };
-
-  // useEffect(() => {
-  //   console.log("Updated quiz state:", quiz);
-  // }, [quiz]);
 
   return (
     <QuizContext.Provider value={quizInfo}>{children}</QuizContext.Provider>
