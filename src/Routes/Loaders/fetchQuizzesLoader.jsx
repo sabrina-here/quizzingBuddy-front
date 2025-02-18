@@ -16,7 +16,11 @@ const fetchQuizzesLoader = async ({ params }) => {
     return response.data; // The fetched quizzes will be available in the component
   } catch (error) {
     console.error("Error fetching quizzes:", error);
-    throw new Response("Failed to load quizzes", { status: 500 });
+    Swal.fire({
+      icon: "error",
+      title: "Oops...",
+      text: "Failed to load quizzes. Please Try again",
+    });
   }
 };
 

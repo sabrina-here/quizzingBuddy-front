@@ -1,4 +1,5 @@
 import useAxiosSecure from "../Hooks/useAxiosSecure";
+import Swal from "sweetalert2";
 
 const fetchQuizQuestions = async (topic, difficulty, numQuestions) => {
   const axiosSecure = useAxiosSecure();
@@ -26,7 +27,11 @@ const fetchQuizQuestions = async (topic, difficulty, numQuestions) => {
       "Error fetching quiz questions:",
       error.response?.data || error.message
     );
-    throw new Error("Failed to fetch quiz questions");
+    Swal.fire({
+      icon: "error",
+      title: "Oops...",
+      text: "Failed to fetch quiz questions. Please Try again",
+    });
   }
 };
 

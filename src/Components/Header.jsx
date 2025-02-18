@@ -35,6 +35,9 @@ export default function Header() {
   const userNav = (
     <>
       <li className="px-3 hover:font-medium">
+        <Link to={"/"}>Home</Link>
+      </li>
+      <li className="px-3 hover:font-medium">
         <div className="relative inline-block text-left group cursor-pointer">
           <NavLink to={"/myTopics"}> My Topics </NavLink>
           <div

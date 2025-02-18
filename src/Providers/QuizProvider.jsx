@@ -11,30 +11,41 @@ export default function QuizProvider({ children }) {
   const [difficulty, setDifficulty] = useState("");
   const [loading, setLoading] = useState(true);
   const [updateQuizId, setUpdateQuizId] = useState();
+  const [timer, setTimer] = useState(null);
+  const [quizDuration, setQuizDuration] = useState(0);
 
-  const handleQuiz = async (t, n, d) => {
+  const handleQuiz = async (t, n, d, time) => {
     setTopic(t);
     setNumQuestions(n);
     setDifficulty(d);
     setLoading(true); // Set loading to true before fetching
+    setTimer(time);
+    setQuizDuration(time);
 
     try {
       const response = await fetchQuizQuestions(t, n, d);
       setQuiz(response);
     } catch (error) {
       console.error("Error fetching quiz:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Error fetching quiz. Please Try again",
+      });
     } finally {
       setLoading(false); // Ensure loading is false after fetching, even if an error occurs
     }
   };
 
-  const handleTryAgainQuiz = (q, t, n, d, id) => {
+  const handleTryAgainQuiz = (q, t, n, d, id, time) => {
     setTopic(t);
     setNumQuestions(n);
     setDifficulty(d);
     setLoading(true);
     setQuiz(q);
     setUpdateQuizId(id);
+    setTimer(time);
+    setQuizDuration(time);
     setLoading(false);
   };
 
@@ -47,6 +58,9 @@ export default function QuizProvider({ children }) {
     topic,
     numQuestions,
     difficulty,
+    timer,
+    setTimer,
+    quizDuration,
     handleQuiz,
     loading,
     handleTryAgainQuiz,

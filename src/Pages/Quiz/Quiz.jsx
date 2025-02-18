@@ -3,12 +3,12 @@ import QaBlock from "./QaBlock";
 import { QuizContext } from "../../Providers/QuizProvider";
 import { useNavigate } from "react-router";
 import Modal from "../../Components/Modal";
-import fetchQuizQuestions from "../../Components/fetchQuizQuestions";
 import { IoClose } from "react-icons/io5";
 import { authContext } from "../../Providers/AuthProvider";
 import useAxiosSecure from "../../Hooks/useAxiosSecure";
 import Swal from "sweetalert2";
 import Loader from "../../Components/Loader";
+import QuizTimer from "../../Components/QuizTimer";
 
 export default function Quiz() {
   const {
@@ -17,6 +17,9 @@ export default function Quiz() {
     topic,
     numQuestions,
     difficulty,
+    timer,
+    setTimer,
+    quizDuration,
     loading,
     handleQuiz,
     updateQuizId,
@@ -29,6 +32,9 @@ export default function Quiz() {
   const [submitted, setSubmitted] = useState(false);
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(0);
+  const [penaltyApplied, setPenaltyApplied] = useState(0);
+  const [stopTimer, setStopTimer] = useState(false);
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
@@ -37,6 +43,8 @@ export default function Quiz() {
     setCorrect(0);
     setSelectedAnswers({});
     setSubmitted(false);
+    setPenaltyApplied(0);
+    setStopTimer(false);
     openModal();
   };
 
@@ -52,11 +60,14 @@ export default function Quiz() {
 
   const handleQuizUpdate = async () => {
     setSubmitted(true);
+    setStopTimer(true);
+    const penalty = penaltyApplied;
+    const finalScore = correct * Math.pow(0.5, penalty);
     try {
       const token = localStorage.getItem("token");
       const response = await axiosSecure.patch(
         `/updateQuiz/${updateQuizId}`,
-        { score: correct },
+        { score: finalScore, penalty },
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -65,19 +76,31 @@ export default function Quiz() {
       );
     } catch (error) {
       console.error("Error updating quiz score:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Error updating quiz score. Please Try again",
+      });
     }
     localStorage.removeItem("quizData");
+    setPenaltyApplied(0);
   };
 
   const handleQuizSubmit = async () => {
     setSubmitted(true);
+    setStopTimer(true);
     // calculate result (already done while selecting)
     // post data to db with result , email, no of q, difficulty and topic if user present
+    const penalty = penaltyApplied;
+    const finalScore = correct * Math.pow(0.5, penalty);
+
     if (user?.email) {
       const userQuizData = {
         email: user.email,
         topic,
-        score: correct,
+        timer: quizDuration,
+        penalty,
+        score: finalScore,
         numQuestions,
         difficulty,
         quiz,
@@ -113,6 +136,7 @@ export default function Quiz() {
     }
     // remove quizData from localstorage
     localStorage.removeItem("quizData");
+    setPenaltyApplied(0);
   };
 
   const handleQuizDiscard = () => {
@@ -123,31 +147,66 @@ export default function Quiz() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+
     const form = event.target;
     const topic = form.topic.value;
     const difficulty = form.difficulty.value;
     const numQuestions = form.questions.value;
+    const timer = form.timer.value;
 
-    handleQuiz(topic, numQuestions, difficulty);
+    handleQuiz(topic, numQuestions, difficulty, timer);
 
     form.reset();
     closeModal();
     navigate("/quiz");
   };
 
+  const handleTimeUp = () => {
+    if (!submitted) {
+      updateQuizId ? handleQuizUpdate() : handleQuizSubmit();
+      alert("time up");
+    }
+  };
+
+  useEffect(() => {
+    const handleTabChange = () => {
+      if (document.hidden) {
+        setPenaltyApplied((prev) => {
+          return prev + 1; // Properly updates state
+        });
+
+        alert("You switched tabs! 50% of your marks have been deducted.");
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleTabChange);
+
+    return () => {
+      document.removeEventListener("visibilitychange", handleTabChange);
+    };
+  }, []);
+
   if (loading) return <Loader></Loader>;
 
   return (
     <div className="lg:max-w-[90%] mx-auto">
       <div className="">
-        {/* header to show result */}
-        {submitted && (
-          <div className=" text-end p-2 bg-light/40 text-xl">
-            {" "}
-            correct :{" "}
-            <span className="text-green-600 font-semibold">{correct}</span>
+        <div className="flex items-center justify-between">
+          <div>
+            <QuizTimer stopTimer={stopTimer} onTimeUp={handleTimeUp} />
           </div>
-        )}
+          <div>
+            {submitted && (
+              <div className=" text-end p-2 bg-light/40 text-xl">
+                {" "}
+                correct :{" "}
+                <span className="text-green-600 font-semibold">
+                  {correct * Math.pow(0.5, penaltyApplied)}
+                </span>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
       <div className="grid grid-cols-2 gap-4 container mx-auto">
         {quiz.map((q, index) => (
@@ -179,8 +238,9 @@ export default function Quiz() {
           className="p-2 mx-2 my-4 border-2 border-accent bg-accent/10 hover:bg-accent/20 hover:text-xl px-5 rounded-lg font-medium text-lg"
           onClick={handleGenerateQuiz}
         >
-          Generate quiz
+          Generate New quiz
         </button>
+
         <>
           {updateQuizId ? (
             <button
@@ -278,7 +338,7 @@ export default function Quiz() {
             >
               Select Number of Questions
             </label>
-            <div className="mt-2 space-y-2">
+            <div className="mt-2 space-y-2 grid grid-cols-3">
               <label className="flex items-center space-x-2">
                 <input
                   type="radio"
@@ -305,6 +365,61 @@ export default function Quiz() {
                   className="text-blue-600 focus:ring-blue-500"
                 />
                 <span className="text-gray-700">10</span>
+              </label>
+            </div>
+          </div>
+          <div>
+            <label
+              htmlFor="timer"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Select Timer (minutes)
+            </label>
+            <div className="mt-2 space-y-2 grid grid-cols-3">
+              <label className="flex items-center space-x-2">
+                <input
+                  type="radio"
+                  name="timer"
+                  value="180"
+                  className="text-blue-600 focus:ring-blue-500"
+                />
+                <span className="text-gray-700">3</span>
+              </label>
+              <label className="flex items-center space-x-2">
+                <input
+                  type="radio"
+                  name="timer"
+                  value="300"
+                  className="text-blue-600 focus:ring-blue-500"
+                />
+                <span className="text-gray-700">5</span>
+              </label>
+              <label className="flex items-center space-x-2">
+                <input
+                  type="radio"
+                  name="timer"
+                  value="480"
+                  className="text-blue-600 focus:ring-blue-500"
+                />
+                <span className="text-gray-700">8</span>
+              </label>
+              <label className="flex items-center space-x-2">
+                <input
+                  type="radio"
+                  name="timer"
+                  value="600"
+                  className="text-blue-600 focus:ring-blue-500"
+                />
+                <span className="text-gray-700">10</span>
+              </label>
+              <label className="flex items-center space-x-2">
+                <input
+                  type="radio"
+                  name="timer"
+                  value="0"
+                  className="text-blue-600 focus:ring-blue-500"
+                />
+                <span className="text-gray-700">No Timer</span>
               </label>
             </div>
           </div>

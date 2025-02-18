@@ -50,16 +50,27 @@ export default function Topics() {
           )
         : 0;
 
-    const easyPercentage =
-      (difficultyPercentage.totalEasyScore / difficultyPercentage.totalEasyQ) *
-      100;
-    const mediumPercentage =
-      (difficultyPercentage.totalMediumScore /
-        difficultyPercentage.totalMediumQ) *
-      100;
-    const hardPercentage =
-      (difficultyPercentage.totalHardScore / difficultyPercentage.totalHardQ) *
-      100;
+    const easyPercentage = parseFloat(
+      (
+        (difficultyPercentage.totalEasyScore /
+          difficultyPercentage.totalEasyQ) *
+        100
+      ).toFixed(2)
+    );
+    const mediumPercentage = parseFloat(
+      (
+        (difficultyPercentage.totalMediumScore /
+          difficultyPercentage.totalMediumQ) *
+        100
+      ).toFixed(2)
+    );
+    const hardPercentage = parseFloat(
+      (
+        (difficultyPercentage.totalHardScore /
+          difficultyPercentage.totalHardQ) *
+        100
+      ).toFixed(2)
+    );
     const topicName = quizzes[0].topic;
 
     const navigate = useNavigate();
@@ -76,6 +87,11 @@ export default function Topics() {
         navigate(0);
       } catch (error) {
         console.error("Error deleting quiz:", error);
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "Error deleting quiz. Please Try again",
+        });
       }
     };
 
@@ -105,10 +121,19 @@ export default function Topics() {
             </span>{" "}
           </div>
           <div>
-            score percentage:{" "}
-            <span className="font-bold text-xl text-green-700">
-              {totalScorePercentage || 0}%
-            </span>
+            <div>
+              {" "}
+              score percentage:{" "}
+              <span className="font-bold text-xl text-green-700">
+                {totalScorePercentage || 0}%
+              </span>
+            </div>
+            <div className="w-full bg-gray-300 h-2 rounded">
+              <div
+                className="h-full bg-green-500 rounded"
+                style={{ width: `${totalScorePercentage}%` }}
+              ></div>
+            </div>
           </div>
           <div className="space-x-6 flex">
             <div>

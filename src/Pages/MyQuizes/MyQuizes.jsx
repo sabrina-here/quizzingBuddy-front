@@ -39,6 +39,11 @@ export default function MyQuizes() {
       refetch();
     } catch (error) {
       console.error("Error deleting quiz:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Error deleting quiz. Please Try again",
+      });
     }
   };
 

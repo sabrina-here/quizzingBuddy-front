@@ -2,7 +2,7 @@ import React, { useContext, useState } from "react";
 import Login from "./Login";
 import { authContext } from "../../Providers/AuthProvider";
 import useAxiosSecure from "../../Hooks/useAxiosSecure";
-import { useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 import Swal from "sweetalert2";
 
 export default function Signup() {
@@ -14,7 +14,9 @@ export default function Signup() {
     email: "",
     password: "",
   });
+  const location = useLocation();
   const navigate = useNavigate();
+  const from = location.state?.from?.pathname || "/";
   const [passwordError, setPasswordError] = useState("");
   const [submitDisabled, setSubmitDisabled] = useState(true);
 
@@ -29,7 +31,13 @@ export default function Signup() {
       setPasswordError("Password does not match");
     } else {
       setPasswordError("");
-      setSubmitDisabled(false);
+      if (
+        formData.email.trim() !== "" &&
+        formData.password.trim() !== "" &&
+        formData.name.trim() !== ""
+      ) {
+        setSubmitDisabled(false);
+      }
     }
   };
 
@@ -56,10 +64,14 @@ export default function Signup() {
         showCloseButton: true,
         showConfirmButton: false,
       });
-      navigate("/");
+      navigate(from, { replace: true });
     } catch (err) {
       console.error("Error registering user:", err);
-      alert("An unexpected error occurred. Please try again.");
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Something went wrong! Please try again",
+      });
     }
   };
 
@@ -156,8 +168,9 @@ export default function Signup() {
                 <button
                   type="submit"
                   className={`${
-                    submitDisabled ? "bg-medium" : "bg-primary"
+                    submitDisabled ? "bg-medium" : "bg-primary cursor-pointer"
                   }  text-white p-2 mx-auto px-4 text-lg font-semibold rounded-sm`}
+                  disabled={submitDisabled}
                 >
                   Sign Up
                 </button>

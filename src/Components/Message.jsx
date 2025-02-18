@@ -14,12 +14,14 @@ export default function Message({ message }) {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+
     const form = event.target;
     const topic = form.topic.value;
     const difficulty = form.difficulty.value;
     const numQuestions = form.questions.value;
+    const timer = form.timer.value;
 
-    handleQuiz(topic, numQuestions, difficulty);
+    handleQuiz(topic, numQuestions, difficulty, timer);
 
     form.reset();
     closeModal();
@@ -107,7 +109,7 @@ export default function Message({ message }) {
             >
               Select Number of Questions
             </label>
-            <div className="mt-2 space-y-2">
+            <div className="mt-2 space-y-2 grid grid-cols-3">
               <label className="flex items-center space-x-2">
                 <input
                   type="radio"
@@ -134,6 +136,61 @@ export default function Message({ message }) {
                   className="text-blue-600 focus:ring-blue-500"
                 />
                 <span className="text-gray-700">10</span>
+              </label>
+            </div>
+          </div>
+          <div>
+            <label
+              htmlFor="timer"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Select Timer (minutes)
+            </label>
+            <div className="mt-2 space-y-2 grid grid-cols-3">
+              <label className="flex items-center space-x-2">
+                <input
+                  type="radio"
+                  name="timer"
+                  value="180"
+                  className="text-blue-600 focus:ring-blue-500"
+                />
+                <span className="text-gray-700">3</span>
+              </label>
+              <label className="flex items-center space-x-2">
+                <input
+                  type="radio"
+                  name="timer"
+                  value="300"
+                  className="text-blue-600 focus:ring-blue-500"
+                />
+                <span className="text-gray-700">5</span>
+              </label>
+              <label className="flex items-center space-x-2">
+                <input
+                  type="radio"
+                  name="timer"
+                  value="480"
+                  className="text-blue-600 focus:ring-blue-500"
+                />
+                <span className="text-gray-700">8</span>
+              </label>
+              <label className="flex items-center space-x-2">
+                <input
+                  type="radio"
+                  name="timer"
+                  value="600"
+                  className="text-blue-600 focus:ring-blue-500"
+                />
+                <span className="text-gray-700">10</span>
+              </label>
+              <label className="flex items-center space-x-2">
+                <input
+                  type="radio"
+                  name="timer"
+                  value="0"
+                  className="text-blue-600 focus:ring-blue-500"
+                />
+                <span className="text-gray-700">No Timer</span>
               </label>
             </div>
           </div>

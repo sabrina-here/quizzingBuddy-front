@@ -9,3 +9,6 @@
   font-style: normal;
   text-transform: none; /* Ensures text appears as typed */
 }
+.custom-gradient {
+  background: linear-gradient(to top, #93c5fd 7%, #bfdbfe 19%, #f0f9ff 95%);
+}

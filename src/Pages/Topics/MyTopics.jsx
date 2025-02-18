@@ -47,13 +47,18 @@ export default function MyTopics() {
       refetch();
     } catch (error) {
       console.error("Error deleting topic:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Error deleting topic. Please Try again",
+      });
     }
   };
 
   const handleDeleteTopic = (topic) => {
     Swal.fire({
       title: "Are you sure you want to delete?",
-      text: "This action cannot be reversed. ",
+      text: "This action cannot be reversed. Deleting the topic will delete all quizzes under this topic and all related progress data.",
       showDenyButton: false,
       showCancelButton: true,
       confirmButtonText: "Delete",

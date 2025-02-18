@@ -14,10 +14,14 @@ export default function Login() {
   const location = useLocation();
   const navigate = useNavigate();
   const from = location.state?.from?.pathname || "/";
+  const [submitDisabled, setSubmitDisabled] = useState(true);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
+    if (formData.email.trim() !== "" && formData.password.trim() !== "") {
+      setSubmitDisabled(false);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -47,7 +51,11 @@ export default function Login() {
       }
     } catch (err) {
       console.error("Error Logging user:", err);
-      alert("An unexpected error occurred. Please try again.");
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Something went wrong! Please try again",
+      });
     }
   };
 
@@ -89,7 +97,10 @@ export default function Login() {
           <div className="flex justify-center items-center mt-10">
             <button
               type="submit"
-              className="bg-primary text-white p-2 mx-auto px-4 text-lg font-semibold rounded-sm"
+              className={`${
+                submitDisabled ? "bg-medium" : "bg-primary cursor-pointer"
+              }  text-white p-2 mx-auto px-4 text-lg font-semibold rounded-sm`}
+              disabled={submitDisabled}
             >
               Login
             </button>
