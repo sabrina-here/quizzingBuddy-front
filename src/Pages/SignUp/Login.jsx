@@ -35,10 +35,10 @@ export default function Login() {
         },
       });
       if (response.data.email) {
-        const { name, email, accessToken } = response.data;
-        handleUser(name, email);
+        const { name, email, role, accessToken, id } = response.data;
+        handleUser(name, email, role, id);
         localStorage.setItem("token", accessToken);
-        localStorage.setItem("user", JSON.stringify({ name, email }));
+        localStorage.setItem("user", JSON.stringify({ name, email, role, id }));
         form.reset();
         Swal.fire({
           position: "top-end",

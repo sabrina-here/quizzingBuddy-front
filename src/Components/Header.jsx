@@ -102,9 +102,11 @@ export default function Header() {
         <div className="">
           {user ? (
             <div className="relative inline-block text-left group cursor-pointer">
-              <button className="bg-accent text-dark font-bold p-2 rounded-sm ">
-                {user.name}
-              </button>
+              <NavLink to={"/userProfile"}>
+                <button className="bg-accent text-dark font-bold p-2 rounded-sm ">
+                  {user.name}
+                </button>
+              </NavLink>
               <div className="absolute  right-0 w-48 text-dark bg-white border rounded-lg shadow-lg opacity-0 group-hover:opacity-100 group-hover:block transition-opacity duration-200 ease-in-out hidden">
                 <ul className="py-1 text-center text-dark font-medium bg-light ">
                   <li>{user.email}</li>

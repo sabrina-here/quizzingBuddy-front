@@ -62,12 +62,11 @@ export default function Quiz() {
     setSubmitted(true);
     setStopTimer(true);
     const penalty = penaltyApplied;
-    const finalScore = correct * Math.pow(0.5, penalty);
     try {
       const token = localStorage.getItem("token");
       const response = await axiosSecure.patch(
         `/updateQuiz/${updateQuizId}`,
-        { score: finalScore, penalty },
+        { score: correct, penalty },
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -91,16 +90,14 @@ export default function Quiz() {
     setStopTimer(true);
     // calculate result (already done while selecting)
     // post data to db with result , email, no of q, difficulty and topic if user present
-    const penalty = penaltyApplied;
-    const finalScore = correct * Math.pow(0.5, penalty);
 
     if (user?.email) {
       const userQuizData = {
         email: user.email,
         topic,
         timer: quizDuration,
-        penalty,
-        score: finalScore,
+        penalty: penaltyApplied,
+        score: correct,
         numQuestions,
         difficulty,
         quiz,
@@ -164,18 +161,18 @@ export default function Quiz() {
   const handleTimeUp = () => {
     if (!submitted) {
       updateQuizId ? handleQuizUpdate() : handleQuizSubmit();
-      alert("time up");
+      Swal.fire("time up");
     }
   };
 
   useEffect(() => {
     const handleTabChange = () => {
-      if (document.hidden) {
-        setPenaltyApplied((prev) => {
-          return prev + 1; // Properly updates state
-        });
-
-        alert("You switched tabs! 50% of your marks have been deducted.");
+      if (document.hidden && !submitted) {
+        setPenaltyApplied((prev) => prev + 1); // Correct way to update state
+        setTimer((prev) => Math.ceil(prev / 2)); // Ensures timer doesn't go below 1
+        if (!Swal.isVisible()) {
+          Swal.fire("You switched tabs! Your timer is halved as a penalty");
+        }
       }
     };
 

@@ -5,12 +5,13 @@ import { IoMdDownload } from "react-icons/io";
 import jsPDF from "jspdf";
 
 export default function MyQuizzesBox({ quizzes, index, handleDeleteQuiz }) {
-  const { difficulty, email, numQuestions, quiz, score, topic, _id } = quizzes;
+  const { difficulty, email, numQuestions, quiz, score, topic, _id, timer } =
+    quizzes;
   const { handleTryAgainQuiz } = useContext(QuizContext);
   const navigate = useNavigate();
 
   const handleTryAgain = () => {
-    handleTryAgainQuiz(quiz, topic, numQuestions, difficulty, _id);
+    handleTryAgainQuiz(quiz, topic, numQuestions, difficulty, _id, timer);
     navigate("/quiz");
   };
   const downloadQuesPDF = () => {

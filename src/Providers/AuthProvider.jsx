@@ -7,8 +7,8 @@ export default function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const handleUser = (name, email) => {
-    setUser({ name, email });
+  const handleUser = (name, email, role, id) => {
+    setUser({ name, email, role, id });
     setLoading(false);
   };
 
@@ -33,7 +33,12 @@ export default function AuthProvider({ children }) {
 
     if (token && userData) {
       const parsedUser = JSON.parse(userData);
-      handleUser(parsedUser.name, parsedUser.email);
+      handleUser(
+        parsedUser.name,
+        parsedUser.email,
+        parsedUser.role,
+        parsedUser.id
+      );
       setLoading(false);
     }
   }, []);

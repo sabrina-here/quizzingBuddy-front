@@ -4,6 +4,19 @@ import { authContext } from "../../Providers/AuthProvider";
 import useAxiosSecure from "../../Hooks/useAxiosSecure";
 import { useLocation, useNavigate } from "react-router";
 import Swal from "sweetalert2";
+import Select from "react-select";
+
+const options = [
+  { value: "student", label: "Student" },
+  { value: "teacher", label: "Teacher" },
+  { value: "professional", label: "Professional" },
+  { value: "developer", label: "Developer" },
+  { value: "designer", label: "Designer" },
+  { value: "researcher", label: "Researcher" },
+  { value: "entrepreneur", label: "Entrepreneur" },
+  { value: "freelancer", label: "Freelancer" },
+  { value: "other", label: "Other" },
+];
 
 export default function Signup() {
   const { showLogin, handleShowLogin, handleShowSignup, handleUser } =
@@ -19,6 +32,7 @@ export default function Signup() {
   const from = location.state?.from?.pathname || "/";
   const [passwordError, setPasswordError] = useState("");
   const [submitDisabled, setSubmitDisabled] = useState(true);
+  const [selectedOption, setSelectedOption] = useState(null);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -44,18 +58,29 @@ export default function Signup() {
   const handleSubmit = async (e) => {
     e.preventDefault(); // Prevent page refresh
     const form = e.target;
+    const userInfo = {
+      ...formData,
+      role: selectedOption ? selectedOption.value : selectedOption,
+    };
 
     try {
-      const response = await axiosSecure.post("/register", formData, {
+      const response = await axiosSecure.post("/register", userInfo, {
         headers: {
           "Content-Type": "application/json",
         },
       });
-      const { token } = response.data;
-      const { name, email } = formData;
-      handleUser(name, email);
-      localStorage.setItem("token", token);
-      localStorage.setItem("user", JSON.stringify({ name, email }));
+      const { accessToken, name, email, id, role } = response.data;
+      handleUser(name, email, role, id);
+      localStorage.setItem("token", accessToken);
+      localStorage.setItem(
+        "user",
+        JSON.stringify({
+          name,
+          email,
+          role,
+          id,
+        })
+      );
       form.reset();
       Swal.fire({
         position: "top-end",
@@ -129,6 +154,20 @@ export default function Signup() {
                   placeholder="Enter your Email"
                   onChange={handleChange}
                   className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                />
+              </div>
+              <div className="my-3">
+                <label
+                  htmlFor="email"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  Role/Profession{" "}
+                  <span className="text-light text-md">(optional)</span>
+                </label>
+                <Select
+                  defaultValue={selectedOption}
+                  onChange={setSelectedOption}
+                  options={options}
                 />
               </div>
               <div className="my-3">
