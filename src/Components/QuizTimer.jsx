@@ -1,13 +1,10 @@
 import { useState, useEffect, useContext } from "react";
 import { QuizContext } from "../Providers/QuizProvider";
 
-const QuizTimer = ({ onTimeUp, stopTimer }) => {
-  const {
-    timer: timeLeft,
-    setTimer: setTimeLeft,
-    quizDuration,
-  } = useContext(QuizContext);
+const QuizTimer = ({ onTimeUp, stopTimer, quizDuration }) => {
+  const { timer: timeLeft, setTimer: setTimeLeft } = useContext(QuizContext);
   useEffect(() => {
+    if (quizDuration == 0) return;
     if (stopTimer) {
       return; // Exit early, do nothing
     }
@@ -22,7 +19,7 @@ const QuizTimer = ({ onTimeUp, stopTimer }) => {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [timeLeft, onTimeUp, stopTimer]);
+  }, [timeLeft, onTimeUp, stopTimer, quizDuration]);
 
   const formatTime = (seconds) => {
     const minutes = Math.floor(seconds / 60);

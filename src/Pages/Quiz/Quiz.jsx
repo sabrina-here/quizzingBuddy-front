@@ -9,6 +9,7 @@ import useAxiosSecure from "../../Hooks/useAxiosSecure";
 import Swal from "sweetalert2";
 import Loader from "../../Components/Loader";
 import QuizTimer from "../../Components/QuizTimer";
+import GenerateQuizModal from "../../Components/GenerateQuizModal";
 
 export default function Quiz() {
   const {
@@ -20,21 +21,24 @@ export default function Quiz() {
     timer,
     setTimer,
     quizDuration,
+    setQuizDuration,
     loading,
-    handleQuiz,
     updateQuizId,
+    handleSetQuizDuration,
+    submitted,
+    handleUpdateSubmitStatus,
   } = useContext(QuizContext);
 
   const { user } = useContext(authContext);
   const axiosSecure = useAxiosSecure();
   const [correct, setCorrect] = useState(0);
   const [selectedAnswers, setSelectedAnswers] = useState({});
-  const [submitted, setSubmitted] = useState(false);
+
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(0);
   const [penaltyApplied, setPenaltyApplied] = useState(0);
   const [stopTimer, setStopTimer] = useState(false);
+  const [timeUp, setTimeUp] = useState(false);
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
@@ -42,9 +46,10 @@ export default function Quiz() {
   const handleGenerateQuiz = () => {
     setCorrect(0);
     setSelectedAnswers({});
-    setSubmitted(false);
+    handleUpdateSubmitStatus(false);
     setPenaltyApplied(0);
     setStopTimer(false);
+    setTimeUp(false);
     openModal();
   };
 
@@ -59,7 +64,7 @@ export default function Quiz() {
   };
 
   const handleQuizUpdate = async () => {
-    setSubmitted(true);
+    handleUpdateSubmitStatus(false);
     setStopTimer(true);
     const penalty = penaltyApplied;
     try {
@@ -86,7 +91,7 @@ export default function Quiz() {
   };
 
   const handleQuizSubmit = async () => {
-    setSubmitted(true);
+    handleUpdateSubmitStatus(false);
     setStopTimer(true);
     // calculate result (already done while selecting)
     // post data to db with result , email, no of q, difficulty and topic if user present
@@ -102,6 +107,7 @@ export default function Quiz() {
         difficulty,
         quiz,
       };
+      console.log(userQuizData);
       const token = localStorage.getItem("token");
       const response = await axiosSecure.post("/saveQuiz", userQuizData, {
         headers: {
@@ -142,34 +148,31 @@ export default function Quiz() {
     navigate("/");
   };
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-
-    const form = event.target;
-    const topic = form.topic.value;
-    const difficulty = form.difficulty.value;
-    const numQuestions = form.questions.value;
-    const timer = form.timer.value;
-
-    handleQuiz(topic, numQuestions, difficulty, timer);
-
-    form.reset();
-    closeModal();
-    navigate("/quiz");
-  };
-
   const handleTimeUp = () => {
     if (!submitted) {
-      updateQuizId ? handleQuizUpdate() : handleQuizSubmit();
+      setTimeUp(true);
       Swal.fire("time up");
+      updateQuizId ? handleQuizUpdate() : handleQuizSubmit();
     }
   };
 
   useEffect(() => {
     const handleTabChange = () => {
       if (document.hidden && !submitted) {
+        console.log("submitted: ", submitted);
+        if (quizDuration === 0) {
+          if (!Swal.isVisible()) {
+            Swal.fire(
+              "You switched tabs! Your timer is set to 1 minute as a penalty"
+            );
+          }
+          handleSetQuizDuration(60);
+          setPenaltyApplied((prev) => prev + 1);
+          return;
+        }
+
         setPenaltyApplied((prev) => prev + 1); // Correct way to update state
-        setTimer((prev) => Math.ceil(prev / 2)); // Ensures timer doesn't go below 1
+        timer && setTimer((prev) => Math.ceil(prev / 2)); // Ensures timer doesn't go below 1
         if (!Swal.isVisible()) {
           Swal.fire("You switched tabs! Your timer is halved as a penalty");
         }
@@ -190,7 +193,11 @@ export default function Quiz() {
       <div className="">
         <div className="flex items-center justify-between">
           <div>
-            <QuizTimer stopTimer={stopTimer} onTimeUp={handleTimeUp} />
+            <QuizTimer
+              stopTimer={stopTimer}
+              onTimeUp={handleTimeUp}
+              quizDuration={quizDuration}
+            />
           </div>
           <div>
             {submitted && (
@@ -258,7 +265,7 @@ export default function Quiz() {
                   ? "bg-medium text-light"
                   : "border-primary  bg-primary/10  hover:bg-primary/20 hover:text-xl"
               } `}
-              onClick={() => handleQuizSubmit()}
+              onClick={handleQuizSubmit}
               disabled={submitted}
             >
               Submit
@@ -266,169 +273,7 @@ export default function Quiz() {
           )}
         </>
       </div>
-
-      <Modal show={isModalOpen} onClose={closeModal}>
-        <div className="flex justify-between items-center">
-          <h2 className="text-xl font-bold ">Select Your Quiz Topic</h2>
-          <button
-            onClick={closeModal}
-            className="px-3 py-1 border-2 border-red-600 text-dark rounded-lg hover:bg-red-700 hover:text-white"
-          >
-            <IoClose className="text-xl" />
-          </button>
-        </div>
-        <form className="p-4 space-y-4" onSubmit={handleSubmit}>
-          <div>
-            <label
-              htmlFor="topic"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Topic
-            </label>
-            <input
-              name="topic"
-              type="text"
-              placeholder="Enter your topic to generate quiz"
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Select Difficulty
-            </label>
-            <div className="mt-2 space-y-2">
-              <label className="flex items-center space-x-2">
-                <input
-                  type="radio"
-                  name="difficulty"
-                  value="easy"
-                  className="text-blue-600 focus:ring-blue-500"
-                />
-                <span className="text-gray-700">Easy</span>
-              </label>
-              <label className="flex items-center space-x-2">
-                <input
-                  type="radio"
-                  name="difficulty"
-                  value="medium"
-                  className="text-blue-600 focus:ring-blue-500"
-                />
-                <span className="text-gray-700">Medium</span>
-              </label>
-              <label className="flex items-center space-x-2">
-                <input
-                  type="radio"
-                  name="difficulty"
-                  value="hard"
-                  className="text-blue-600 focus:ring-blue-500"
-                />
-                <span className="text-gray-700">Hard</span>
-              </label>
-            </div>
-          </div>
-
-          <div>
-            <label
-              htmlFor="questions"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Select Number of Questions
-            </label>
-            <div className="mt-2 space-y-2 grid grid-cols-3">
-              <label className="flex items-center space-x-2">
-                <input
-                  type="radio"
-                  name="questions"
-                  value="5"
-                  className="text-blue-600 focus:ring-blue-500"
-                />
-                <span className="text-gray-700">5</span>
-              </label>
-              <label className="flex items-center space-x-2">
-                <input
-                  type="radio"
-                  name="questions"
-                  value="8"
-                  className="text-blue-600 focus:ring-blue-500"
-                />
-                <span className="text-gray-700">8</span>
-              </label>
-              <label className="flex items-center space-x-2">
-                <input
-                  type="radio"
-                  name="questions"
-                  value="10"
-                  className="text-blue-600 focus:ring-blue-500"
-                />
-                <span className="text-gray-700">10</span>
-              </label>
-            </div>
-          </div>
-          <div>
-            <label
-              htmlFor="timer"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Select Timer (minutes)
-            </label>
-            <div className="mt-2 space-y-2 grid grid-cols-3">
-              <label className="flex items-center space-x-2">
-                <input
-                  type="radio"
-                  name="timer"
-                  value="180"
-                  className="text-blue-600 focus:ring-blue-500"
-                />
-                <span className="text-gray-700">3</span>
-              </label>
-              <label className="flex items-center space-x-2">
-                <input
-                  type="radio"
-                  name="timer"
-                  value="300"
-                  className="text-blue-600 focus:ring-blue-500"
-                />
-                <span className="text-gray-700">5</span>
-              </label>
-              <label className="flex items-center space-x-2">
-                <input
-                  type="radio"
-                  name="timer"
-                  value="480"
-                  className="text-blue-600 focus:ring-blue-500"
-                />
-                <span className="text-gray-700">8</span>
-              </label>
-              <label className="flex items-center space-x-2">
-                <input
-                  type="radio"
-                  name="timer"
-                  value="600"
-                  className="text-blue-600 focus:ring-blue-500"
-                />
-                <span className="text-gray-700">10</span>
-              </label>
-              <label className="flex items-center space-x-2">
-                <input
-                  type="radio"
-                  name="timer"
-                  value="0"
-                  className="text-blue-600 focus:ring-blue-500"
-                />
-                <span className="text-gray-700">No Timer</span>
-              </label>
-            </div>
-          </div>
-
-          <button
-            type="submit"
-            className="w-full bg-blue-600 text-white py-2 px-4 rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-          >
-            Generate Quiz
-          </button>
-        </form>
-      </Modal>
+      <GenerateQuizModal isModalOpen={isModalOpen} closeModal={closeModal} />
     </div>
   );
 }

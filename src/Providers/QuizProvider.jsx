@@ -13,6 +13,7 @@ export default function QuizProvider({ children }) {
   const [updateQuizId, setUpdateQuizId] = useState();
   const [timer, setTimer] = useState(null);
   const [quizDuration, setQuizDuration] = useState(0);
+  const [submitted, setSubmitted] = useState(false);
 
   const handleQuiz = async (t, n, d, time) => {
     setTopic(t);
@@ -53,6 +54,15 @@ export default function QuizProvider({ children }) {
     setQuiz([]);
   };
 
+  const handleSetQuizDuration = (t) => {
+    setQuizDuration(t);
+    setTimer(t);
+  };
+
+  const handleUpdateSubmitStatus = (status) => {
+    setSubmitted(status);
+  };
+
   const quizInfo = {
     quiz,
     topic,
@@ -66,6 +76,9 @@ export default function QuizProvider({ children }) {
     handleTryAgainQuiz,
     updateQuizId,
     quizReset,
+    handleSetQuizDuration,
+    submitted,
+    handleUpdateSubmitStatus,
   };
 
   return (
