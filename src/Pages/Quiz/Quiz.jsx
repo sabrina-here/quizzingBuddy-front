@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import QaBlock from "./QaBlock";
 import { QuizContext } from "../../Providers/QuizProvider";
 import { useNavigate } from "react-router";
@@ -28,6 +28,7 @@ export default function Quiz() {
     submitted,
     handleUpdateSubmitStatus,
   } = useContext(QuizContext);
+  console.log(submitted);
 
   const { user } = useContext(authContext);
   const axiosSecure = useAxiosSecure();
@@ -64,7 +65,7 @@ export default function Quiz() {
   };
 
   const handleQuizUpdate = async () => {
-    handleUpdateSubmitStatus(false);
+    handleUpdateSubmitStatus(true);
     setStopTimer(true);
     const penalty = penaltyApplied;
     try {
@@ -91,7 +92,7 @@ export default function Quiz() {
   };
 
   const handleQuizSubmit = async () => {
-    handleUpdateSubmitStatus(false);
+    handleUpdateSubmitStatus(true);
     setStopTimer(true);
     // calculate result (already done while selecting)
     // post data to db with result , email, no of q, difficulty and topic if user present
@@ -159,7 +160,7 @@ export default function Quiz() {
   useEffect(() => {
     const handleTabChange = () => {
       if (document.hidden && !submitted) {
-        console.log("submitted: ", submitted);
+        if (timer <= 0 || stopTimer) return;
         if (quizDuration === 0) {
           if (!Swal.isVisible()) {
             Swal.fire(

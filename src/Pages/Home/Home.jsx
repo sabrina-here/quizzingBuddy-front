@@ -1,11 +1,10 @@
 import React, { useContext, useEffect, useState } from "react";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
-import Modal from "../../Components/Modal";
-import { IoClose } from "react-icons/io5";
+
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router";
 import { authContext } from "../../Providers/AuthProvider";
-import { QuizContext } from "../../Providers/QuizProvider";
+
 import GenerateQuizModal from "../../Components/GenerateQuizModal";
 
 export default function Home() {
@@ -15,7 +14,6 @@ export default function Home() {
   const closeModal = () => setIsModalOpen(false);
 
   const { user, handleShowLogin } = useContext(authContext);
-  const { handleQuiz } = useContext(QuizContext);
 
   const navigate = useNavigate();
 
