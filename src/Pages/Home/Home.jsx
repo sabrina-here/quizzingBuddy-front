@@ -28,16 +28,14 @@ export default function Home() {
           showCloseButton: true,
           confirmButtonText: "Login",
         }).then((result) => {
-          /* Read more about isConfirmed, isDenied below */
           if (result.isConfirmed) {
             handleShowLogin();
             navigate("/signup");
           }
         });
       }
-    }, 30000); // 60000ms = 1 minute
+    }, 30000); 
 
-    // Clean up the interval on component unmount
     return () => clearInterval(intervalId);
   }, [user]);
 
@@ -66,9 +64,7 @@ export default function Home() {
     <div className=" flex flex-col justify-center items-center custom-gradient">
       <div className="h-[300px] w-[500px] ">
         <DotLottieReact
-          // src="https://lottie.host/8921549b-85f8-4590-9152-897fabedd866/6Oisqb3gNI.lottie"
           src="https://lottie.host/48199fa6-422c-40df-85db-d33a59be8d82/ljuqoVQrQf.lottie"
-          // src="https://lottie.host/ed8d9b0b-91ce-4720-94b5-fcb570a87c9e/JwwVzyxMu2.lottie"
           loop
           autoplay
         />

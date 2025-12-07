@@ -101,8 +101,8 @@ export default function Signup() {
   };
 
   return (
-    <div>
-      <div className="w-[400px] h-[500px] border  rounded-md m-auto my-5">
+    <div >
+      <div className="w-[400px] h-[600px] border  rounded-md m-auto my-5">
         <div className="flex justify-between items-center">
           <button
             className={`p-3 w-[50%] font-medium text-lg ${

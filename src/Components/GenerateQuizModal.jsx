@@ -100,7 +100,7 @@ export default function GenerateQuizModal({ isModalOpen, closeModal }) {
           </div>
 
           <div className="">
-            {preferredTopicsFound && (
+            {preferredTopics.length > 0 && (
               <div>
                 <div className=" w-full my-4 flex items-center justify-center">
                   <hr className="border w-[40%] mx-2" />

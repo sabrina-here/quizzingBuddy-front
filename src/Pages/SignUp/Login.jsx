@@ -59,6 +59,44 @@ export default function Login() {
     }
   };
 
+  const handleDemoLogin = async () => {
+    try {
+      const response = await axiosSecure.post(
+        "/login",
+        {
+          email: "demo@user.com",
+          password: "demouser",
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (response.data.email) {
+        const { name, email, role, accessToken, id } = response.data;
+        handleUser(name, email, role, id);
+        localStorage.setItem("token", accessToken);
+        localStorage.setItem("user", JSON.stringify({ name, email, role, id }));
+        Swal.fire({
+          position: "top-end",
+          text: `Welcome ${name}`,
+          width: 300,
+          showCloseButton: true,
+          showConfirmButton: false,
+        });
+        navigate("/");
+      }
+    } catch (err) {
+      console.error("Error Logging user:", err);
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Something went wrong! Please try again",
+      });
+    }
+  };
+
   return (
     <div className="p-7">
       <div className="mt-10">
@@ -103,6 +141,15 @@ export default function Login() {
               disabled={submitDisabled}
             >
               Login
+            </button>
+          </div>
+          <div className="flex justify-center items-center mt-10">
+            <button
+              type="button"
+              onClick={handleDemoLogin}
+              className={`bg-primary cursor-pointer text-white p-2 mx-auto px-4 text-lg font-semibold rounded-sm`}
+            >
+              Demo Login
             </button>
           </div>
         </form>
